@@ -21,6 +21,7 @@ bash "$TABLET_DIR/patches/apply-firestore-rest.sh" "$CONDUIT_HOME/server/vectors
 
 # Update pip dependencies
 echo "Updating dependencies..."
+source "$HOME/conduit-venv/bin/activate"
 pip install -q -r "$CONDUIT_HOME/server/requirements.txt"
 
 # Restart

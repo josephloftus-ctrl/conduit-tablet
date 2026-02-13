@@ -72,6 +72,8 @@ fi
 
 # --- Step 6: Install Python dependencies ---
 echo "[6/10] Installing Python dependencies..."
+python -m venv "$HOME/conduit-venv"
+source "$HOME/conduit-venv/bin/activate"
 pip install --upgrade pip
 pip install -r "$CONDUIT_HOME/server/requirements.txt"
 pip install -r "$TABLET_DIR/search-proxy/requirements.txt"

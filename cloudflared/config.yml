@@ -1,0 +1,13 @@
+# Cloudflared tunnel config for tablet deployment.
+# tunnel and credentials-file are populated during setup.
+# Run: cloudflared tunnel login && cloudflared tunnel create conduit-tablet
+
+tunnel: TUNNEL_ID_HERE
+credentials-file: /data/data/com.termux/files/home/.cloudflared/TUNNEL_ID_HERE.json
+
+ingress:
+  - hostname: conduit.josephloftus.com
+    service: http://localhost:8080
+  - hostname: ntfy.josephloftus.com
+    service: http://localhost:2586
+  - service: http_status:404

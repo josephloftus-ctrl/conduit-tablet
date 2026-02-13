@@ -10,7 +10,7 @@ git clone <repo-url> ~/conduit-tablet
 cd ~/conduit-tablet
 
 # 2. Run the setup script (installs Termux packages, Python deps, cloudflared)
-bash scripts/setup.sh
+bash setup.sh
 
 # 3. Copy and fill in your environment variables
 cp .env.template ~/conduit/server/.env

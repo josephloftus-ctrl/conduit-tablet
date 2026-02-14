@@ -43,7 +43,7 @@ echo ""
 
 # --- System resources ---
 echo "--- Resources ---"
-LOAD=$(awk '{printf "%s %s %s", $1, $2, $3}' /proc/loadavg 2>/dev/null || echo "unknown")
+LOAD=$(uptime 2>/dev/null | sed 's/.*load average: //' || echo "unknown")
 echo "  Load:    $LOAD"
 echo "  Uptime:  $(uptime -p 2>/dev/null || uptime)"
 

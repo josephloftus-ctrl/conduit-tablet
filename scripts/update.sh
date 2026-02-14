@@ -3,6 +3,7 @@ set -euo pipefail
 
 CONDUIT_HOME="$HOME/conduit"
 TABLET_DIR="$HOME/conduit-tablet"
+SV_DIR="${PREFIX:-/data/data/com.termux/files/usr}/var/service"
 
 echo "=== Updating Conduit ==="
 
@@ -19,15 +20,23 @@ cp "$TABLET_DIR/config.yaml" "$CONDUIT_HOME/server/config.yaml"
 echo "Applying patches..."
 bash "$TABLET_DIR/patches/apply-firestore-rest.sh" "$CONDUIT_HOME/server/vectorstore.py"
 
-# Update pip dependencies
+# Update pip dependencies (tablet installs system-wide, no venv)
 echo "Updating dependencies..."
-source "$HOME/conduit-venv/bin/activate"
 pip install -q -r "$CONDUIT_HOME/server/requirements.txt"
 
-# Restart
-echo "Restarting..."
-bash "$TABLET_DIR/scripts/stop.sh"
+# Rebuild web UI
+echo "Building web UI..."
+cd "$CONDUIT_HOME/web"
+npm install --silent
+npm run build
+
+# Restart affected services
+echo "Restarting services..."
+for svc in conduit-server conduit-search conduit-spectre conduit-dashboard conduit-brief; do
+    sv restart "$SV_DIR/$svc" 2>/dev/null || true
+done
+
 sleep 2
-bash "$TABLET_DIR/scripts/start.sh"
+sv status "$SV_DIR"/conduit-*
 
 echo "=== Update complete ==="

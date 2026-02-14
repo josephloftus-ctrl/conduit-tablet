@@ -1,11 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/bash
-# Auto-start Conduit on device boot.
+# Auto-start on device boot.
+# runit (via termux-services) handles starting all conduit-* services automatically.
+# This script just ensures wake lock and SSH are available.
 
 # Acquire wake lock to prevent Android from sleeping Termux
 termux-wake-lock
 
-# Wait for networking to come up
-sleep 30
-
-# Start the server
-exec "$HOME/conduit-tablet/scripts/start.sh"
+# Start SSH so we can always reach the tablet remotely
+sshd 2>/dev/null || true

@@ -1,16 +1,17 @@
 #!/data/data/com.termux/files/usr/bin/bash
 set -euo pipefail
 
-if ! tmux has-session -t conduit 2>/dev/null; then
-    echo "Conduit session is not running."
-    exit 0
-fi
+SV_DIR="${PREFIX:-/data/data/com.termux/files/usr}/var/service"
+SERVICES=(
+    conduit-server conduit-tunnel conduit-search conduit-ntfy
+    conduit-spectre conduit-nginx conduit-dashboard conduit-brief
+)
 
-# Send Ctrl-C to each service window
-for window in server tunnel search; do
-    tmux send-keys -t "conduit:$window" C-c 2>/dev/null || true
+echo "Stopping Conduit services..."
+for svc in "${SERVICES[@]}"; do
+    sv down "$SV_DIR/$svc" 2>/dev/null || true
 done
 
-sleep 2
-tmux kill-session -t conduit 2>/dev/null || true
-echo "Conduit stopped."
+sleep 1
+echo ""
+sv status "$SV_DIR"/conduit-*

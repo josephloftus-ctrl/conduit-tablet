@@ -27,9 +27,9 @@ check_http() {
     fi
 }
 
-check_http "conduit-server" "http://localhost:8080/api/health"
+check_http "conduit-server" "http://localhost:8080/"
 check_http "conduit-search" "http://localhost:8889/health"
-check_http "conduit-spectre" "http://localhost:8000"
+check_http "conduit-spectre" "http://localhost:8000/api/health"
 
 # Send alert if any failures
 if [ -n "$FAILURES" ]; then

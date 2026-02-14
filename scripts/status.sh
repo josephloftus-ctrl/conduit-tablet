@@ -22,9 +22,9 @@ check_http() {
     fi
 }
 
-check_http "Conduit server" "http://localhost:8080/api/health"
+check_http "Conduit server" "http://localhost:8080/"
 check_http "Search proxy" "http://localhost:8889/health"
-check_http "Spectre backend" "http://localhost:8000"
+check_http "Spectre backend" "http://localhost:8000/api/health"
 
 # Cloudflared — process check (no HTTP endpoint)
 if pgrep -x cloudflared > /dev/null 2>&1; then

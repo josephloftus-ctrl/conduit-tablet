@@ -95,20 +95,7 @@ chmod +x "$SVC/run"
 setup_log "$SVC"
 echo "  conduit-nginx"
 
-# --- 7. Dashboard ---
-SVC="$SV_DIR/conduit-dashboard"
-mkdir -p "$SVC"
-cat > "$SVC/run" <<'EOF'
-#!/bin/sh
-cd /data/data/com.termux/files/home/dashboard
-export DASHBOARD_PASSWORD=conduit
-exec python server.py
-EOF
-chmod +x "$SVC/run"
-setup_log "$SVC"
-echo "  conduit-dashboard"
-
-# --- 8. Morning Brief ---
+# --- 7. Morning Brief ---
 SVC="$SV_DIR/conduit-brief"
 mkdir -p "$SVC"
 cat > "$SVC/run" <<'EOF'
@@ -120,7 +107,7 @@ chmod +x "$SVC/run"
 setup_log "$SVC"
 echo "  conduit-brief"
 
-# --- 9. crond (for healthcheck cron) ---
+# --- 8. crond (for healthcheck cron) ---
 SVC="$SV_DIR/conduit-crond"
 mkdir -p "$SVC"
 cat > "$SVC/run" <<'EOF'
@@ -132,7 +119,7 @@ setup_log "$SVC"
 echo "  conduit-crond"
 
 echo ""
-echo "Done. 9 services created."
+echo "Done. 8 services created."
 echo "runsvdir should pick them up within 5 seconds."
 echo ""
 echo "Verify with:"

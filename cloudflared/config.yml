@@ -8,6 +8,10 @@ credentials-file: /data/data/com.termux/files/home/.cloudflared/TUNNEL_ID_HERE.j
 ingress:
   - hostname: conduit.josephloftus.com
     service: http://localhost:8080
+  - hostname: steady.josephloftus.com
+    service: http://localhost:8090
+  - hostname: brief.josephloftus.com
+    service: http://localhost:5050
   - hostname: ntfy.josephloftus.com
     service: http://localhost:2586
   - service: http_status:404

@@ -27,7 +27,7 @@ declare -A HTTP_CHECKS=(
     [conduit-spectre]="http://localhost:8000/api/health"
 )
 
-RUNIT_ONLY_SERVICES="conduit-tunnel conduit-ntfy conduit-nginx conduit-dashboard conduit-brief conduit-crond"
+RUNIT_ONLY_SERVICES="conduit-tunnel conduit-ntfy conduit-nginx conduit-brief conduit-crond"
 
 ALL_SERVICES="conduit-server conduit-search conduit-spectre $RUNIT_ONLY_SERVICES"
 

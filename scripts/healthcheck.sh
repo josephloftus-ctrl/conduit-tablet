@@ -12,7 +12,7 @@ FAILURES=""
 
 # Check runit services
 for svc in conduit-server conduit-tunnel conduit-search conduit-ntfy \
-           conduit-spectre conduit-nginx conduit-dashboard conduit-brief; do
+           conduit-spectre conduit-nginx conduit-brief; do
     status=$(sv status "$SV_DIR/$svc" 2>&1)
     if ! echo "$status" | grep -q "^run:"; then
         FAILURES="${FAILURES}${svc} (runit: down)\n"

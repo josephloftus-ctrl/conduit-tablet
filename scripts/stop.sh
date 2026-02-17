@@ -4,7 +4,7 @@ set -euo pipefail
 SV_DIR="${PREFIX:-/data/data/com.termux/files/usr}/var/service"
 SERVICES=(
     conduit-server conduit-tunnel conduit-search conduit-ntfy
-    conduit-spectre conduit-nginx conduit-dashboard conduit-brief
+    conduit-spectre conduit-nginx conduit-brief
 )
 
 echo "Stopping Conduit services..."

@@ -32,7 +32,7 @@ npm run build
 
 # Restart affected services
 echo "Restarting services..."
-for svc in conduit-server conduit-search conduit-spectre conduit-dashboard conduit-brief; do
+for svc in conduit-server conduit-search conduit-spectre conduit-brief; do
     sv restart "$SV_DIR/$svc" 2>/dev/null || true
 done
 

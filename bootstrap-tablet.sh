@@ -28,6 +28,49 @@ echo "Conduit Tablet Bootstrap"
 echo "Current stage: $(current_stage)"
 echo "========================================"
 
+# ── SECTION 0: Install Base Packages ──
+# Everything downstream depends on these. Idempotent — pkg install skips already-installed.
+if ! stage_done 0; then
+  echo ">>> Stage 0: Installing base Termux packages..."
+  yes | pkg update 2>/dev/null || true
+  yes | pkg upgrade 2>/dev/null || true
+  DEBIAN_FRONTEND=noninteractive apt install -y -o Dpkg::Options::='--force-confold' \
+    python python-pip nodejs git openssh cloudflared nginx \
+    termux-api libxml2 libxslt libjpeg-turbo zlib cronie rsync 2>&1 | tee -a "$LOG_FILE"
+
+  # ntfy binary (not in Termux repos)
+  if ! command -v ntfy &>/dev/null; then
+    echo "  Installing ntfy..."
+    mkdir -p ~/bin
+    curl -sSL "https://github.com/binwiederhier/ntfy/releases/download/v2.16.0/ntfy_2.16.0_linux_arm64.tar.gz" \
+      | tar xz --strip-components=1 -C ~/bin ntfy_2.16.0_linux_arm64/ntfy
+    chmod +x ~/bin/ntfy
+  fi
+
+  # pip.conf — TUR + Eutalix indexes for prebuilt ARM64 wheels
+  mkdir -p ~/.config/pip
+  cat > ~/.config/pip/pip.conf << 'PIPCONF'
+[global]
+extra-index-url = https://termux-user-repository.github.io/pypi/
+PIPCONF
+  echo "  pip.conf configured with TUR indexes"
+
+  # SSH key (if pushed via ADB to /sdcard)
+  if [ -f /sdcard/ssh-key.pub ] && [ ! -f ~/.ssh/authorized_keys ]; then
+    mkdir -p ~/.ssh
+    chmod 700 ~/.ssh
+    cp /sdcard/ssh-key.pub ~/.ssh/authorized_keys
+    chmod 600 ~/.ssh/authorized_keys
+    echo "  SSH key installed from /sdcard"
+  fi
+
+  # Start sshd
+  sshd 2>/dev/null || true
+  echo "  sshd started on port 8022"
+
+  mark_done 0
+fi
+
 # ── SECTION 1: Wake Lock ──
 if ! stage_done 1; then
   echo ">>> Stage 1: Acquiring wake lock..."

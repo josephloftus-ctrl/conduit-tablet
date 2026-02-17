@@ -26,7 +26,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 LAPTOP_ENV="/home/joseph/Projects/conduit-server/server/.env"
 KISS_APK="/tmp/kiss-launcher.apk"
-TABLET_SSH="joseph@100.112.80.48"  # Update if Tailscale IP changes
+TABLET_SSH="joseph@100.115.173.115"  # Update if Tailscale IP changes
 SSH_PORT=8022
 SSH_PUBKEY="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINPXK9AouTH3yixV4KIx4npBihxUTiO26H41fSK/z3BU joseph@josephPC"
 CONDUIT_REPO="https://github.com/josephloftus-ctrl/conduit-server.git"

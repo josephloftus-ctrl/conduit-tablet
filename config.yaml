@@ -83,7 +83,7 @@ agents:
   list:
     - id: default
       default: true
-      provider: chatgpt
+      provider: openrouter
 
     - id: researcher
       provider: gemini
@@ -214,6 +214,10 @@ voice:
   tts_voice: "alloy"
 
 outlook:
-  enabled: false
+  enabled: true
   client_id_env: "OUTLOOK_CLIENT_ID"
   poll_interval_minutes: 15
+
+plugins:
+  enabled: true
+  dir: plugins

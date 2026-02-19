@@ -28,11 +28,11 @@ pip install -q -r "$CONDUIT_HOME/server/requirements.txt"
 echo "Building web UI..."
 cd "$CONDUIT_HOME/web"
 npm install --silent
-npm run build
+NODE_OPTIONS=--max_old_space_size=512 npm run build
 
-# Restart affected services
+# Restart all managed services
 echo "Restarting services..."
-for svc in conduit-server conduit-search conduit-spectre conduit-brief; do
+for svc in conduit-server conduit-search conduit-spectre conduit-brief conduit-tunnel conduit-nginx conduit-ntfy conduit-crond; do
     sv restart "$SV_DIR/$svc" 2>/dev/null || true
 done
 

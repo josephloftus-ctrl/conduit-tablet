@@ -1,12 +1,17 @@
-# Cloudflared tunnel config for tablet deployment.
-# tunnel and credentials-file are populated during setup.
-# Run: cloudflared tunnel login && cloudflared tunnel create conduit-tablet
+# Cloudflared tunnel config TEMPLATE for tablet deployment.
+# DO NOT deploy this file directly — it contains PLACEHOLDER values.
+# The live config lives at ~/.cloudflared/config.yml on the tablet.
+#
+# To set up: cloudflared tunnel login && cloudflared tunnel create conduit-tablet
+# Then replace TUNNEL_ID_HERE with the actual tunnel ID.
 
 tunnel: TUNNEL_ID_HERE
 credentials-file: /data/data/com.termux/files/home/.cloudflared/TUNNEL_ID_HERE.json
 
 ingress:
   - hostname: conduit.josephloftus.com
+    service: http://localhost:8080
+  - hostname: status.josephloftus.com
     service: http://localhost:8080
   - hostname: steady.josephloftus.com
     service: http://localhost:8090

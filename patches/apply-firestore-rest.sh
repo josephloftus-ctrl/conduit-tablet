@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-# Switch Firestore AsyncClient to REST transport (avoids grpcio native build on Android).
-# Applied by setup.sh and update.sh after cloning/pulling the conduit repo.
+# Firestore transport patch — grpcio is now available on the tablet,
+# so this patch is a no-op. Kept for compatibility with update.sh.
+# If grpcio breaks again, re-add transport="rest" logic here
+# (requires google-cloud-firestore version that supports it).
 
 set -euo pipefail
 
@@ -11,10 +13,10 @@ if [ ! -f "$VECTORSTORE" ]; then
     exit 0
 fi
 
+# Undo the old REST patch if it's still present (library doesn't support it)
 if grep -q 'transport="rest"' "$VECTORSTORE"; then
-    echo "Firestore REST patch already applied"
-    exit 0
+    sed -i 's/_db = AsyncClient(project=project, transport="rest")/_db = AsyncClient(project=project)/' "$VECTORSTORE"
+    echo "Firestore REST patch REMOVED (grpcio available, transport param unsupported)"
+else
+    echo "Firestore patch: no changes needed (using gRPC transport)"
 fi
-
-sed -i 's/_db = AsyncClient(project=project)/_db = AsyncClient(project=project, transport="rest")/' "$VECTORSTORE"
-echo "Firestore REST patch applied to $VECTORSTORE"

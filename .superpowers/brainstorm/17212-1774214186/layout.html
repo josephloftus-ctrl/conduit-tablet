@@ -1,0 +1,367 @@
+<style>
+  .mock-screen {
+    background: #0A0A0B;
+    border: 2px solid #2A2A2E;
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    overflow: hidden;
+    margin: 0 auto;
+    position: relative;
+  }
+  .mock-topbar {
+    background: #111113;
+    border-bottom: 1px solid #1E1E22;
+    padding: 6px 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+  }
+  .mock-brand { color: #E8572A; font-weight: 800; font-size: 11px; letter-spacing: -0.5px; }
+  .mock-pill {
+    background: #1E1E22;
+    color: #6B7280;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .mock-pill.active { background: rgba(232,87,42,0.2); color: #E8572A; border: 1px solid rgba(232,87,42,0.4); }
+  .mock-status { margin-left: auto; display: flex; align-items: center; gap: 4px; color: #4B5563; font-size: 9px; }
+  .mock-dot { width: 5px; height: 5px; border-radius: 50%; background: #22C55E; }
+  .mock-sidebar {
+    background: #111113;
+    border-right: 1px solid #1E1E22;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    overflow: hidden;
+  }
+  .mock-ambient-card {
+    background: #18181B;
+    border: 1px solid #1E1E22;
+    border-radius: 6px;
+    padding: 6px 8px;
+  }
+  .mock-card-title { color: #E5E7EB; font-size: 9px; font-weight: 700; }
+  .mock-card-sub { color: #6B7280; font-size: 8px; margin-top: 2px; }
+  .mock-card-metric { color: #E8572A; font-size: 9px; font-weight: 700; margin-top: 3px; }
+  .mock-section-label { color: #4B5563; font-size: 8px; font-weight: 700; letter-spacing: 1px; margin-top: 4px; padding: 0 2px; }
+  .mock-thread-item {
+    display: flex; align-items: center; gap: 6px;
+    padding: 5px 6px; border-radius: 4px;
+    color: #6B7280; font-size: 8px;
+  }
+  .mock-thread-item.active { background: #18181B; color: #E5E7EB; }
+  .mock-thread-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+  .mock-conversation {
+    background: #0A0A0B;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .mock-messages {
+    flex: 1;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow: hidden;
+  }
+  .mock-user-msg {
+    align-self: flex-end;
+    background: rgba(232,87,42,0.12);
+    border: 1px solid rgba(232,87,42,0.2);
+    border-radius: 8px 8px 2px 8px;
+    padding: 6px 10px;
+    color: #E5E7EB;
+    font-size: 9px;
+    max-width: 65%;
+  }
+  .mock-koji-msg {
+    align-self: flex-start;
+    max-width: 85%;
+  }
+  .mock-koji-label { color: #E8572A; font-size: 8px; font-weight: 700; margin-bottom: 3px; }
+  .mock-koji-bubble {
+    background: #18181B;
+    border: 1px solid #1E1E22;
+    border-radius: 2px 8px 8px 8px;
+    padding: 7px 10px;
+    color: #D1D5DB;
+    font-size: 9px;
+    line-height: 1.5;
+    font-family: 'IBM Plex Sans', sans-serif;
+  }
+  .mock-surface-row { display: flex; gap: 5px; margin-top: 5px; flex-wrap: wrap; }
+  .mock-surface {
+    background: #18181B;
+    border: 1px solid #2A2A2E;
+    border-radius: 4px;
+    padding: 3px 8px;
+    color: #E5E7EB;
+    font-size: 8px;
+  }
+  .mock-surface.action { border-color: rgba(232,87,42,0.3); color: #E8572A; }
+  .mock-input-area {
+    background: #111113;
+    border-top: 1px solid #1E1E22;
+    padding: 8px;
+  }
+  .mock-input-bar {
+    background: #18181B;
+    border: 1px solid #2A2A2E;
+    border-radius: 8px;
+    padding: 6px 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #4B5563;
+    font-size: 9px;
+  }
+  .mock-input-text { flex: 1; }
+  .mock-input-btn { color: #E8572A; font-size: 10px; font-weight: 700; }
+  .mock-quick-row { display: flex; gap: 5px; margin-top: 6px; overflow: hidden; }
+  .mock-quick-btn {
+    background: #18181B;
+    border: 1px solid #1E1E22;
+    border-radius: 4px;
+    padding: 3px 8px;
+    color: #6B7280;
+    font-size: 8px;
+    white-space: nowrap;
+  }
+  .mock-tabs {
+    background: #111113;
+    border-top: 1px solid #1E1E22;
+    display: flex;
+    padding: 6px 8px;
+    gap: 4px;
+  }
+  .mock-tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 4px;
+    border-radius: 6px;
+    color: #4B5563;
+    font-size: 7px;
+  }
+  .mock-tab.active { background: rgba(232,87,42,0.1); color: #E8572A; }
+  .mock-tab-icon { font-size: 12px; }
+  .mock-fab {
+    position: absolute;
+    bottom: 58px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    background: #E8572A;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 14px;
+    font-weight: 300;
+    box-shadow: 0 2px 8px rgba(232,87,42,0.4);
+  }
+  .mock-drawer-handle {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #18181B;
+    border: 1px solid #1E1E22;
+    border-left: none;
+    border-radius: 0 6px 6px 0;
+    padding: 12px 4px;
+    color: #4B5563;
+    font-size: 8px;
+    writing-mode: vertical-rl;
+    letter-spacing: 1px;
+  }
+  .mock-strip {
+    background: #111113;
+    border-bottom: 1px solid #1E1E22;
+    padding: 5px 8px;
+    display: flex;
+    gap: 5px;
+    overflow: hidden;
+  }
+  .mock-strip-card {
+    background: #18181B;
+    border: 1px solid #1E1E22;
+    border-radius: 6px;
+    padding: 4px 8px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    white-space: nowrap;
+  }
+  .mock-strip-title { color: #E5E7EB; font-size: 8px; font-weight: 700; }
+  .mock-strip-sub { color: #6B7280; font-size: 7px; }
+</style>
+
+<h2>Layout approach for 8.7" tablet</h2>
+<p class="subtitle">8.7" at ~800–900dp landscape — the design doc assumed 12". Pick the layout that feels right.</p>
+
+<div class="cards">
+
+  <!-- OPTION A: Drawer sidebar -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 16px; background: #0d0d0f;">
+      <div style="font-size: 9px; color: #6B7280; margin-bottom: 6px; font-family: monospace;">Landscape · 8.7"</div>
+      <div class="mock-screen" style="width: 100%; height: 160px; display: flex; flex-direction: column;">
+        <div class="mock-topbar">
+          <span class="mock-brand">KOJI</span>
+          <span class="mock-pill active">OPS</span>
+          <span class="mock-pill">TRAIN</span>
+          <span class="mock-pill">DEV</span>
+          <div class="mock-status"><div class="mock-dot"></div>9:41</div>
+        </div>
+        <div style="display: flex; flex: 1; overflow: hidden; position: relative;">
+          <div class="mock-conversation" style="width: 100%;">
+            <div class="mock-messages">
+              <div class="mock-user-msg">What's the status at LM 100?</div>
+              <div class="mock-koji-msg">
+                <div class="mock-koji-label">KOJI</div>
+                <div class="mock-koji-bubble">LM 100 is staffed. Danny on grill, Kyle on service. 3 items below par...</div>
+                <div class="mock-surface-row">
+                  <div class="mock-surface action">↻ Swap Thursday entrée</div>
+                  <div class="mock-surface">📊 View count sheet</div>
+                </div>
+              </div>
+            </div>
+            <div class="mock-input-area">
+              <div class="mock-input-bar">
+                <span class="mock-input-text">Talk to Koji...</span>
+                <span class="mock-input-btn">🎙</span>
+                <span class="mock-input-btn">↑</span>
+              </div>
+            </div>
+          </div>
+          <div class="mock-drawer-handle">AMBIENT</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Swipe-in Drawer</h3>
+      <p>Full conversation width. Ambient sidebar slides in from the left edge on swipe or tap. Same layout as the iOS app — familiar, maximizes chat space.</p>
+    </div>
+  </div>
+
+  <!-- OPTION B: Persistent narrow sidebar -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 16px; background: #0d0d0f;">
+      <div style="font-size: 9px; color: #6B7280; margin-bottom: 6px; font-family: monospace;">Landscape · 8.7"</div>
+      <div class="mock-screen" style="width: 100%; height: 160px; display: flex; flex-direction: column;">
+        <div class="mock-topbar">
+          <span class="mock-brand">KOJI</span>
+          <span class="mock-pill active">OPS</span>
+          <span class="mock-pill">TRAIN</span>
+          <span class="mock-pill">DEV</span>
+          <div class="mock-status"><div class="mock-dot"></div>9:41</div>
+        </div>
+        <div style="display: flex; flex: 1; overflow: hidden;">
+          <div class="mock-sidebar" style="width: 110px; flex-shrink: 0;">
+            <div class="mock-section-label">AMBIENT</div>
+            <div class="mock-ambient-card">
+              <div class="mock-card-title">LM 100</div>
+              <div class="mock-card-sub">3 items below par</div>
+              <div class="mock-card-metric">⚠ OPS</div>
+            </div>
+            <div class="mock-ambient-card">
+              <div class="mock-card-title">Danny</div>
+              <div class="mock-card-sub">Grill · Solo</div>
+            </div>
+            <div class="mock-section-label" style="margin-top: 4px;">THREADS</div>
+            <div class="mock-thread-item active"><div class="mock-thread-dot" style="background:#E8572A;"></div>LM 100 status</div>
+            <div class="mock-thread-item"><div class="mock-thread-dot" style="background:#22C55E;"></div>Upper pull log</div>
+          </div>
+          <div class="mock-conversation">
+            <div class="mock-messages">
+              <div class="mock-user-msg">What's the status at LM 100?</div>
+              <div class="mock-koji-msg">
+                <div class="mock-koji-label">KOJI</div>
+                <div class="mock-koji-bubble">LM 100 is staffed. Danny on grill, Kyle on service...</div>
+              </div>
+            </div>
+            <div class="mock-input-area" style="padding: 5px;">
+              <div class="mock-input-bar">
+                <span class="mock-input-text" style="font-size: 8px;">Talk to Koji...</span>
+                <span class="mock-input-btn">🎙</span>
+                <span class="mock-input-btn">↑</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Narrow Persistent Sidebar</h3>
+      <p>Always-visible 110dp sidebar with ambient cards + thread list. Conversation pane is narrower but visible at all times. True two-pane, just compressed.</p>
+    </div>
+  </div>
+
+  <!-- OPTION C: Top ambient strip + full conversation -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 16px; background: #0d0d0f;">
+      <div style="font-size: 9px; color: #6B7280; margin-bottom: 6px; font-family: monospace;">Landscape · 8.7"</div>
+      <div class="mock-screen" style="width: 100%; height: 160px; display: flex; flex-direction: column;">
+        <div class="mock-topbar">
+          <span class="mock-brand">KOJI</span>
+          <span class="mock-pill active">OPS</span>
+          <span class="mock-pill">TRAIN</span>
+          <span class="mock-pill">DEV</span>
+          <div class="mock-status"><div class="mock-dot"></div>9:41</div>
+        </div>
+        <div class="mock-strip">
+          <div class="mock-strip-card">
+            <div><div class="mock-strip-title">LM 100</div><div class="mock-strip-sub">3 below par · ⚠</div></div>
+          </div>
+          <div class="mock-strip-card">
+            <div><div class="mock-strip-title">Danny</div><div class="mock-strip-sub">Grill · Solo</div></div>
+          </div>
+          <div class="mock-strip-card">
+            <div><div class="mock-strip-title">710Q</div><div class="mock-strip-sub">CPU 12% · All OK</div></div>
+          </div>
+          <div class="mock-strip-card">
+            <div><div class="mock-strip-title">Proxmox</div><div class="mock-strip-sub">3 VMs running</div></div>
+          </div>
+        </div>
+        <div class="mock-conversation">
+          <div class="mock-messages">
+            <div class="mock-user-msg">What's the status at LM 100?</div>
+            <div class="mock-koji-msg">
+              <div class="mock-koji-label">KOJI</div>
+              <div class="mock-koji-bubble">LM 100 is staffed. Danny on grill, Kyle on service. 3 items below par...</div>
+              <div class="mock-surface-row">
+                <div class="mock-surface action">↻ Swap Thursday entrée</div>
+                <div class="mock-surface">📊 View count sheet</div>
+              </div>
+            </div>
+          </div>
+          <div class="mock-input-area" style="padding: 5px;">
+            <div class="mock-input-bar">
+              <span class="mock-input-text">Talk to Koji...</span>
+              <span class="mock-input-btn">🎙</span>
+              <span class="mock-input-btn">↑</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Horizontal Ambient Strip</h3>
+      <p>Ambient cards scroll horizontally above the conversation. Full width conversation below. Glanceable without losing chat width. Good for landscape 8.7".</p>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top: 16px;">These are landscape views. Portrait would always be single-pane regardless of choice.</p>

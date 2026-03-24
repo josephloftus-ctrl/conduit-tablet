@@ -3,15 +3,15 @@ set -euo pipefail
 
 SV_DIR="${PREFIX:-/data/data/com.termux/files/usr}/var/service"
 SERVICES=(
-    conduit-server conduit-tunnel conduit-search conduit-ntfy
-    conduit-spectre conduit-nginx conduit-brief
+    koji-server koji-tunnel koji-search koji-ntfy
+    koji-spectre koji-nginx koji-brief
 )
 
-echo "Stopping Conduit services..."
+echo "Stopping Koji services..."
 for svc in "${SERVICES[@]}"; do
     sv down "$SV_DIR/$svc" 2>/dev/null || true
 done
 
 sleep 1
 echo ""
-sv status "$SV_DIR"/conduit-*
+sv status "$SV_DIR"/koji-*

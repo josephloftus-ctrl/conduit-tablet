@@ -4,15 +4,15 @@
 # Sends ntfy alert to tablet-alerts topic if anything is down.
 #
 # Crontab entry:
-#   */5 * * * * /data/data/com.termux/files/home/conduit-tablet/scripts/healthcheck.sh
+#   */5 * * * * /data/data/com.termux/files/home/koji-tablet/scripts/healthcheck.sh
 
 SV_DIR="${PREFIX:-/data/data/com.termux/files/usr}/var/service"
 NTFY_TOPIC="https://ntfy.sh/tablet-alerts"
 FAILURES=""
 
 # Check runit services
-for svc in conduit-server conduit-tunnel conduit-search conduit-ntfy \
-           conduit-spectre conduit-nginx conduit-brief; do
+for svc in koji-server koji-tunnel koji-search koji-ntfy \
+           koji-spectre koji-nginx koji-brief; do
     status=$(sv status "$SV_DIR/$svc" 2>&1)
     if ! echo "$status" | grep -q "^run:"; then
         FAILURES="${FAILURES}${svc} (runit: down)\n"
@@ -27,9 +27,9 @@ check_http() {
     fi
 }
 
-check_http "conduit-server" "http://localhost:8080/"
-check_http "conduit-search" "http://localhost:8889/health"
-check_http "conduit-spectre" "http://localhost:8000/api/health"
+check_http "koji-server" "http://localhost:8080/"
+check_http "koji-search" "http://localhost:8889/health"
+check_http "koji-spectre" "http://localhost:8000/api/health"
 
 # Send alert if any failures
 if [ -n "$FAILURES" ]; then

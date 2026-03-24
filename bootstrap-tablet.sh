@@ -2,7 +2,7 @@
 set -e
 
 # ============================================================
-# Conduit Tablet Bootstrap — Idempotent, Resumable
+# Koji Tablet Bootstrap — Idempotent, Resumable
 # Run from Termux terminal on tablet (NOT over SSH)
 # Safe to re-run at any point — skips completed sections
 # ============================================================
@@ -24,7 +24,7 @@ stage_done() {
 }
 
 echo "========================================"
-echo "Conduit Tablet Bootstrap"
+echo "Koji Tablet Bootstrap"
 echo "Current stage: $(current_stage)"
 echo "========================================"
 
@@ -86,7 +86,7 @@ if ! stage_done 2; then
   termux-setup-storage || true
   sleep 2
 
-  mkdir -p ~/conduit-data/{watchdog,logs}
+  mkdir -p ~/koji-data/{watchdog,logs}
   mkdir -p ~/documents/work/lockheed/{sales,inventory,purchasing,reports}
   mkdir -p ~/documents/sorted
   mkdir -p ~/ntfy-data
@@ -104,18 +104,18 @@ fi
 # ── SECTION 4: Clone Repos ──
 if ! stage_done 4; then
   echo ">>> Stage 4: Cloning public repos from GitHub..."
-  if [ ! -d ~/conduit/.git ]; then
-    git clone https://github.com/josephloftus-ctrl/conduit-server.git ~/conduit
+  if [ ! -d ~/koji/.git ]; then
+    git clone https://github.com/josephloftus-ctrl/koji-server.git ~/koji
   else
-    echo "  conduit-server already cloned, pulling latest..."
-    cd ~/conduit && git pull
+    echo "  koji-server already cloned, pulling latest..."
+    cd ~/koji && git pull
   fi
 
-  if [ ! -d ~/conduit-tablet/.git ]; then
-    git clone https://github.com/josephloftus-ctrl/conduit-tablet.git ~/conduit-tablet
+  if [ ! -d ~/koji-tablet/.git ]; then
+    git clone https://github.com/josephloftus-ctrl/koji-tablet.git ~/koji-tablet
   else
-    echo "  conduit-tablet already cloned, pulling latest..."
-    cd ~/conduit-tablet && git pull
+    echo "  koji-tablet already cloned, pulling latest..."
+    cd ~/koji-tablet && git pull
   fi
 
   echo ""
@@ -129,9 +129,9 @@ fi
 if ! stage_done 5; then
   echo ">>> Stage 5: Installing .env..."
   if [ -f /sdcard/conduit-env ]; then
-    cp /sdcard/conduit-env ~/conduit/server/.env
+    cp /sdcard/conduit-env ~/koji/server/.env
     echo "  .env installed from /sdcard"
-  elif [ -f ~/conduit/server/.env ]; then
+  elif [ -f ~/koji/server/.env ]; then
     echo "  .env already exists, skipping"
   else
     echo "  WARNING: No .env found! Push via ADB: adb push .env /sdcard/conduit-env"
@@ -145,9 +145,9 @@ fi
 # This is the long one — 5-10 minutes. If screen locks, re-run script.
 if ! stage_done 6; then
   echo ">>> Stage 6: Installing Python dependencies (this takes a while)..."
-  pip install -r ~/conduit/server/requirements.txt --break-system-packages 2>&1 | tee -a "$LOG_FILE"
-  if [ -f ~/conduit-tablet/search-proxy/requirements.txt ]; then
-    pip install -r ~/conduit-tablet/search-proxy/requirements.txt --break-system-packages 2>&1 | tee -a "$LOG_FILE"
+  pip install -r ~/koji/server/requirements.txt --break-system-packages 2>&1 | tee -a "$LOG_FILE"
+  if [ -f ~/koji-tablet/search-proxy/requirements.txt ]; then
+    pip install -r ~/koji-tablet/search-proxy/requirements.txt --break-system-packages 2>&1 | tee -a "$LOG_FILE"
   fi
   mark_done 6
 fi
@@ -155,7 +155,7 @@ fi
 # ── SECTION 7: Web UI Build ──
 if ! stage_done 7; then
   echo ">>> Stage 7: Building web UI..."
-  cd ~/conduit/web
+  cd ~/koji/web
   npm install 2>&1 | tee -a "$LOG_FILE"
   NODE_OPTIONS=--max_old_space_size=512 npm run build 2>&1 | tee -a "$LOG_FILE"
   mark_done 7
@@ -164,9 +164,9 @@ fi
 # ── SECTION 8: Config Overlay + Patches ──
 if ! stage_done 8; then
   echo ">>> Stage 8: Applying config overlay and patches..."
-  cp ~/conduit-tablet/config.yaml ~/conduit/server/config.yaml
-  if [ -f ~/conduit-tablet/patches/apply-firestore-rest.sh ]; then
-    bash ~/conduit-tablet/patches/apply-firestore-rest.sh ~/conduit/server/vectorstore.py
+  cp ~/koji-tablet/config.yaml ~/koji/server/config.yaml
+  if [ -f ~/koji-tablet/patches/apply-firestore-rest.sh ]; then
+    bash ~/koji-tablet/patches/apply-firestore-rest.sh ~/koji/server/vectorstore.py
   fi
   mark_done 8
 fi
@@ -211,11 +211,11 @@ if ! stage_done 10; then
   # Re-acquire wake lock after Termux restart
   termux-wake-lock
 
-  bash ~/conduit-tablet/scripts/setup-runit.sh
+  bash ~/koji-tablet/scripts/setup-runit.sh
   sleep 3
 
   echo "  Service status:"
-  sv status $PREFIX/var/service/conduit-* 2>/dev/null || true
+  sv status $PREFIX/var/service/koji-* 2>/dev/null || true
   sv status $PREFIX/var/service/sshd 2>/dev/null || true
   mark_done 10
 fi
@@ -224,22 +224,22 @@ fi
 if ! stage_done 11; then
   echo ">>> Stage 11: Installing boot script..."
   mkdir -p ~/.termux/boot
-  cat > ~/.termux/boot/conduit-start << 'BOOT'
+  cat > ~/.termux/boot/koji-start << 'BOOT'
 #!/data/data/com.termux/files/usr/bin/bash
 termux-wake-lock
 sleep 10
 # runit (from termux-services) auto-starts all enabled services
 # sshd is supervised by runit — no need to start manually
 BOOT
-  chmod +x ~/.termux/boot/conduit-start
+  chmod +x ~/.termux/boot/koji-start
   mark_done 11
 fi
 
 # ── SECTION 12: Watchdog Cron ──
 if ! stage_done 12; then
   echo ">>> Stage 12: Setting up watchdog cron..."
-  mkdir -p ~/conduit-data/watchdog
-  (crontab -l 2>/dev/null | grep -v "watchdog.sh"; echo "*/5 * * * * $HOME/conduit-tablet/scripts/watchdog.sh >> $HOME/conduit-data/logs/watchdog.log 2>&1") | crontab -
+  mkdir -p ~/koji-data/watchdog
+  (crontab -l 2>/dev/null | grep -v "watchdog.sh"; echo "*/5 * * * * $HOME/koji-tablet/scripts/watchdog.sh >> $HOME/koji-data/logs/watchdog.log 2>&1") | crontab -
   mark_done 12
 fi
 
@@ -258,36 +258,36 @@ if ! stage_done 13; then
   fi
 
   # Check if tunnel already exists
-  if cloudflared tunnel list 2>/dev/null | grep -q "conduit-tablet"; then
-    echo "  Tunnel 'conduit-tablet' already exists."
+  if cloudflared tunnel list 2>/dev/null | grep -q "koji-tablet"; then
+    echo "  Tunnel 'koji-tablet' already exists."
   else
-    cloudflared tunnel create conduit-tablet
-    cloudflared tunnel route dns conduit-tablet conduit.josephloftus.com
+    cloudflared tunnel create koji-tablet
+    cloudflared tunnel route dns koji-tablet conduit.josephloftus.com
   fi
 
   echo ""
   echo "  Verify: edit ~/.cloudflared/config.yml with your tunnel ID if needed."
-  echo "  The conduit-tunnel runit service will run cloudflared."
+  echo "  The koji-tunnel runit service will run cloudflared."
   mark_done 13
 fi
 
 # ── SECTION 14: Automated Backup (daily, via cron) ──
 if ! stage_done 14; then
   echo ">>> Stage 14: Setting up automated backup..."
-  cat > ~/backup-conduit.sh << 'BACKUP'
+  cat > ~/backup-koji.sh << 'BACKUP'
 #!/data/data/com.termux/files/usr/bin/bash
-# Daily backup of critical config to conduit-data
-BACKUP_DIR=~/conduit-data/backups/$(date +%Y%m%d)
+# Daily backup of critical config to koji-data
+BACKUP_DIR=~/koji-data/backups/$(date +%Y%m%d)
 mkdir -p "$BACKUP_DIR"
-cp ~/conduit/server/.env "$BACKUP_DIR/" 2>/dev/null
-cp ~/conduit/server/config.yaml "$BACKUP_DIR/" 2>/dev/null
+cp ~/koji/server/.env "$BACKUP_DIR/" 2>/dev/null
+cp ~/koji/server/config.yaml "$BACKUP_DIR/" 2>/dev/null
 cp -r ~/.cloudflared "$BACKUP_DIR/" 2>/dev/null
 crontab -l > "$BACKUP_DIR/crontab.txt" 2>/dev/null
 # Keep only last 7 days
-find ~/conduit-data/backups -maxdepth 1 -mtime +7 -exec rm -rf {} \; 2>/dev/null
+find ~/koji-data/backups -maxdepth 1 -mtime +7 -exec rm -rf {} \; 2>/dev/null
 BACKUP
-  chmod +x ~/backup-conduit.sh
-  (crontab -l 2>/dev/null | grep -v "backup-conduit"; echo "0 3 * * * $HOME/backup-conduit.sh") | crontab -
+  chmod +x ~/backup-koji.sh
+  (crontab -l 2>/dev/null | grep -v "backup-koji"; echo "0 3 * * * $HOME/backup-koji.sh") | crontab -
   mark_done 14
 fi
 
@@ -301,7 +301,7 @@ echo "║    tablet status                             ║"
 echo "║    tablet ping                               ║"
 echo "║                                              ║"
 echo "║  Or manually:                                ║"
-echo "║    sv status \$PREFIX/var/service/conduit-*    ║"
+echo "║    sv status \$PREFIX/var/service/koji-*       ║"
 echo "║    curl localhost:8080/api/health             ║"
 echo "║    curl localhost:8889/health                 ║"
 echo "║    curl localhost:8000/api/health             ║"

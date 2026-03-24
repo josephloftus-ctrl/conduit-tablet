@@ -2,7 +2,7 @@
 # DO NOT deploy this file directly — it contains PLACEHOLDER values.
 # The live config lives at ~/.cloudflared/config.yml on the tablet.
 #
-# To set up: cloudflared tunnel login && cloudflared tunnel create conduit-tablet
+# To set up: cloudflared tunnel login && cloudflared tunnel create koji-tablet
 # Then replace TUNNEL_ID_HERE with the actual tunnel ID.
 
 tunnel: TUNNEL_ID_HERE
@@ -16,7 +16,7 @@ ingress:
   - hostname: steady.josephloftus.com
     service: http://localhost:8090
   - hostname: brief.josephloftus.com
-    service: http://localhost:5050
+    service: http://localhost:8090
   - hostname: ntfy.josephloftus.com
     service: http://localhost:2586
   - service: http_status:404

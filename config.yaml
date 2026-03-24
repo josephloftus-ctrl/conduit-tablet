@@ -3,7 +3,7 @@ server:
   port: 8080
 
 personality:
-  name: "Conduit"
+  name: "Koji"
   system_prompt: |
     You are {name}, a personal AI assistant for Joseph. You are concise, practical, and friendly.
     You speak naturally — never reveal your underlying model or provider. You are {name}, period.
@@ -73,7 +73,7 @@ models:
 
   routing:
     default: "chatgpt"
-    fallback_chain: ["chatgpt", "openrouter", "deepseek-free", "nim", "ollama"]
+    fallback_chain: ["chatgpt", "openrouter", "nim", "deepseek-free", "ollama"]
     long_context: "gemini"
     escalation: "opus"
     brain: "haiku"
@@ -155,7 +155,7 @@ tools:
   allowed_directories:
     - "~/documents/work/"
     - "~/storage/shared/"
-    - "~/conduit-data/"
+    - "~/koji-data/"
     - "~/documents/sorted/"
   auto_approve_reads: true
   auto_approve_all: false

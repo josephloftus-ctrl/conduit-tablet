@@ -2,12 +2,12 @@
 
 SV_DIR="${PREFIX:-/data/data/com.termux/files/usr}/var/service"
 
-echo "=== Conduit Tablet Status ==="
+echo "=== Koji Tablet Status ==="
 echo ""
 
 # --- runit service status ---
 echo "--- Services (runit) ---"
-sv status "$SV_DIR"/conduit-* 2>/dev/null || echo "(runit not running)"
+sv status "$SV_DIR"/koji-* 2>/dev/null || echo "(runit not running)"
 echo ""
 
 # --- HTTP health checks ---
@@ -22,7 +22,7 @@ check_http() {
     fi
 }
 
-check_http "Conduit server" "http://localhost:8080/"
+check_http "Koji server" "http://localhost:8080/"
 check_http "Search proxy" "http://localhost:8889/health"
 check_http "Spectre backend" "http://localhost:8000/api/health"
 

@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/bash
 set -euo pipefail
 
-# Setup runit services for all Conduit tablet services.
+# Setup runit services for all Koji tablet services.
 # Run once after: pkg install termux-services && sv-enable
 # Hardcodes Termux paths — runit runs in minimal env where $HOME may be unset.
 
@@ -24,27 +24,27 @@ LOGEOF
     printf 's1000000\nn10\n' > "$svc_dir/log/main/config"
 }
 
-echo "Creating runit services under $SV_DIR/conduit-*"
+echo "Creating runit services under $SV_DIR/koji-*"
 
-# --- 1. Conduit server (needs .env) ---
-SVC="$SV_DIR/conduit-server"
+# --- 1. Koji server (needs .env) ---
+SVC="$SV_DIR/koji-server"
 mkdir -p "$SVC"
 cat > "$SVC/run" <<EOF
 #!/bin/sh
 export PATH="$TERMUX_PATH"
 export HOME="$HOME"
-cd $HOME/conduit
+cd $HOME/koji
 set -a
-. $HOME/conduit/server/.env
+. $HOME/koji/server/.env
 set +a
 exec python -m server
 EOF
 chmod +x "$SVC/run"
 setup_log "$SVC"
-echo "  conduit-server"
+echo "  koji-server"
 
 # --- 2. Cloudflared tunnel ---
-SVC="$SV_DIR/conduit-tunnel"
+SVC="$SV_DIR/koji-tunnel"
 mkdir -p "$SVC"
 cat > "$SVC/run" <<EOF
 #!/bin/sh
@@ -62,24 +62,24 @@ exec cloudflared tunnel --config "\$CONFIG" run
 EOF
 chmod +x "$SVC/run"
 setup_log "$SVC"
-echo "  conduit-tunnel"
+echo "  koji-tunnel"
 
 # --- 3. Search proxy ---
-SVC="$SV_DIR/conduit-search"
+SVC="$SV_DIR/koji-search"
 mkdir -p "$SVC"
 cat > "$SVC/run" <<EOF
 #!/bin/sh
 export PATH="$TERMUX_PATH"
 export HOME="$HOME"
-cd $HOME/conduit-tablet/search-proxy
+cd $HOME/koji-tablet/search-proxy
 exec python proxy.py
 EOF
 chmod +x "$SVC/run"
 setup_log "$SVC"
-echo "  conduit-search"
+echo "  koji-search"
 
 # --- 4. ntfy server ---
-SVC="$SV_DIR/conduit-ntfy"
+SVC="$SV_DIR/koji-ntfy"
 mkdir -p "$SVC"
 cat > "$SVC/run" <<EOF
 #!/bin/sh
@@ -89,10 +89,10 @@ exec $HOME/bin/ntfy serve --config $HOME/ntfy-data/server.yml
 EOF
 chmod +x "$SVC/run"
 setup_log "$SVC"
-echo "  conduit-ntfy"
+echo "  koji-ntfy"
 
 # --- 5. Spectre backend ---
-SVC="$SV_DIR/conduit-spectre"
+SVC="$SV_DIR/koji-spectre"
 mkdir -p "$SVC"
 cat > "$SVC/run" <<EOF
 #!/bin/sh
@@ -103,10 +103,10 @@ exec uvicorn backend.api.main:app --host 0.0.0.0 --port 8000 --limit-max-request
 EOF
 chmod +x "$SVC/run"
 setup_log "$SVC"
-echo "  conduit-spectre"
+echo "  koji-spectre"
 
 # --- 6. Nginx gateway (Spectre frontend) ---
-SVC="$SV_DIR/conduit-nginx"
+SVC="$SV_DIR/koji-nginx"
 mkdir -p "$SVC"
 cat > "$SVC/run" <<EOF
 #!/bin/sh
@@ -116,10 +116,10 @@ exec nginx -g 'daemon off;' -c $HOME/spectre/nginx/spectre.conf -p $HOME/spectre
 EOF
 chmod +x "$SVC/run"
 setup_log "$SVC"
-echo "  conduit-nginx"
+echo "  koji-nginx"
 
 # --- 7. Morning Brief ---
-SVC="$SV_DIR/conduit-brief"
+SVC="$SV_DIR/koji-brief"
 mkdir -p "$SVC"
 cat > "$SVC/run" <<EOF
 #!/bin/sh
@@ -130,10 +130,10 @@ exec python brief_server.py
 EOF
 chmod +x "$SVC/run"
 setup_log "$SVC"
-echo "  conduit-brief"
+echo "  koji-brief"
 
 # --- 8. crond (for watchdog cron) ---
-SVC="$SV_DIR/conduit-crond"
+SVC="$SV_DIR/koji-crond"
 mkdir -p "$SVC"
 cat > "$SVC/run" <<EOF
 #!/bin/sh
@@ -143,10 +143,10 @@ exec crond -n
 EOF
 chmod +x "$SVC/run"
 setup_log "$SVC"
-echo "  conduit-crond"
+echo "  koji-crond"
 
 # --- 9. sshd (supervised — no more manual restarts) ---
-SVC="$SV_DIR/conduit-sshd"
+SVC="$SV_DIR/koji-sshd"
 mkdir -p "$SVC"
 cat > "$SVC/run" <<EOF
 #!/bin/sh
@@ -163,11 +163,11 @@ exec sshd -D -e
 EOF
 chmod +x "$SVC/run"
 setup_log "$SVC"
-echo "  conduit-sshd"
+echo "  koji-sshd"
 
 echo ""
-echo "Done. 9 services created (8 conduit + sshd)."
+echo "Done. 9 services created (8 koji + sshd)."
 echo "runsvdir should pick them up within 5 seconds."
 echo ""
 echo "Verify with:"
-echo "  sv status $SV_DIR/conduit-*"
+echo "  sv status $SV_DIR/koji-*"

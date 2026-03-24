@@ -6,12 +6,12 @@
 # - Logs incidents with crash forensics
 # - Escalates repeated failures
 #
-# Crontab: */5 * * * * ~/conduit-tablet/scripts/watchdog.sh
+# Crontab: */5 * * * * ~/koji-tablet/scripts/watchdog.sh
 
 set -euo pipefail
 
 SV_DIR="${PREFIX:-/data/data/com.termux/files/usr}/var/service"
-DATA_DIR="$HOME/conduit-data/watchdog"
+DATA_DIR="$HOME/koji-data/watchdog"
 INCIDENTS="$DATA_DIR/incidents.jsonl"
 STATE_FILE="$DATA_DIR/state.json"
 NTFY_TOPIC="https://ntfy.sh/tablet-alerts"
@@ -22,14 +22,14 @@ ESCALATION_THRESHOLD=3
 
 # Services and their HTTP endpoints (empty = runit-only)
 declare -A HTTP_CHECKS=(
-    [conduit-server]="http://localhost:8080/api/health"
-    [conduit-search]="http://localhost:8889/health"
-    [conduit-spectre]="http://localhost:8000/api/health"
+    [koji-server]="http://localhost:8080/api/health"
+    [koji-search]="http://localhost:8889/health"
+    [koji-spectre]="http://localhost:8000/api/health"
 )
 
-RUNIT_ONLY_SERVICES="conduit-tunnel conduit-ntfy conduit-nginx conduit-brief conduit-crond"
+RUNIT_ONLY_SERVICES="koji-tunnel koji-ntfy koji-nginx koji-brief koji-crond"
 
-ALL_SERVICES="conduit-server conduit-search conduit-spectre $RUNIT_ONLY_SERVICES"
+ALL_SERVICES="koji-server koji-search koji-spectre $RUNIT_ONLY_SERVICES"
 
 mkdir -p "$DATA_DIR"
 
